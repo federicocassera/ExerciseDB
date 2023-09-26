@@ -46,18 +46,18 @@ namespace ExerciseDB
                     switch (options)
                     {
                         case 1:
-                            createUser(con); 
-                            break;                            
-                        case 2: 
+                            createUser(con);
+                            break;
+                        case 2:
                             Login(con);
                             break;
-                        case 3: 
+                        case 3:
                             listOrder(con);
                             break;
-                        case 4: 
+                        case 4:
                             detailOrder(con);
                             break;
-                        case 5: 
+                        case 5:
                             createOrder(con);
                             break;
                         case 6:
@@ -70,89 +70,9 @@ namespace ExerciseDB
                     }
                     //createTable(con);
                 }
-                
-
-                //    /////////////////   QUERY SCALARE
-                //    string q = "select count(*) from orders";   //query
-                //    var cmd = new SqlCommand(q, con);   //interrogazione query e connessione db                   
-                //    var n = cmd.ExecuteScalar();     //scalar siccome è un unico valore numerico
-                //    Console.WriteLine($"ci sono {n} ordini");
-
-                //    /////////////////   QUERY READER
-                //    cmd = new SqlCommand("select * from orders", con);
-                //    using (var orders = cmd.ExecuteReader())
-                //    {
-                //        while (orders.Read())
-                //        {
-                //            Console.WriteLine("{0} {1}", orders["orderid"], orders["customer"]);
-                //        }
-                //    }
-
-                //    /////////////////   QUERY READER
-                //    ///interrogazione all'utente
-                //    Console.WriteLine("inserire un customer da selezionare");
-                //    string user = Console.ReadLine();
-
-                //    cmd = new SqlCommand($"select * from orders where customer = '{user}'", con);
-                //    using (var orders = cmd.ExecuteReader())
-                //    {
-                //        while (orders.Read())
-                //        {
-                //            Console.WriteLine("--> {0} {1}", orders["orderid"], orders["customer"]);
-                //        }
-                //    }
-
-                //    /////////////////   PARAMETRI
-                //    Console.WriteLine("con parametro");
-                //    cmd = new SqlCommand("select * from orders where customer = @user", con);
-                //    SqlParameter par = new SqlParameter("@user", SqlDbType.VarChar, 50);
-                //    cmd.Parameters.Add(par);
-                //    par.Value = user;
-                //    using (var orders = cmd.ExecuteReader())
-                //    {
-                //        while (orders.Read())
-                //        {
-                //            Console.WriteLine("--> {0} {1}", orders["orderid"], orders["customer"]);
-                //        }
-                //    }
-
-                //    /////////////////   DML
-                //    Console.WriteLine("DML UPDATE");
-                //    cmd = new SqlCommand("update orderitems set price = price+100 where orderid=@order", con);
-                //    cmd.Parameters.Add(new SqlParameter("@order", 1));
-                //    Console.WriteLine($"ho modificato {cmd.ExecuteNonQuery()} righe");
-
-                //    /////////////////   DML CON TRANSICTION
-                //    SqlTransaction tr = null;
-                //    try
-                //    {
-                //        tr = con.BeginTransaction();
-                //        Console.WriteLine("DML UPDATE");
-                //        cmd = new SqlCommand("update orderitems set price = price+100 where orderid=@order", con, tr);
-                //        cmd.Parameters.Add(new SqlParameter("@order", 1));
-                //        Console.WriteLine($"ho modificato {cmd.ExecuteNonQuery()} righe");
-                //        tr.Commit();
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        Console.WriteLine(ex.Message);
-                //        tr.Rollback();
-                //    }
-
-                //    /////////////////   ADAPTER
-                //    SqlDataAdapter a = new SqlDataAdapter("select * from customers", con);
-                //    DataSet model = new DataSet();
-                //    a.Fill(model, "customers");
-                //    Console.WriteLine("//carico il dataset dei customer");
-                //    foreach (DataRow c in model.Tables["customers"].Rows)
-                //    {
-                //        Console.WriteLine("{0} {1}", c["customer"], c["country"]);
-                //    }
-                //}
-
-                //con.Close();
-                //Console.WriteLine("connessione chiusa");
-                //Console.ReadLine();
+                con.Close();
+                Console.WriteLine("connessione chiusa");
+                Console.ReadLine();
 
             }
         }
@@ -310,23 +230,44 @@ namespace ExerciseDB
         {
             Console.WriteLine("inseire id dell'ordine");
             int ord = (int)Console.Read();
+            Console.WriteLine("-----------------------------------------");
             string q = $"select orderid, customer, orderdate, item, qty, price" +
                 "from orders" +
                 "where orderid = @ord";
             var cmd = new SqlCommand(q, con);
             cmd.Parameters.Add(new SqlParameter("id", ord));
+            
+            using (var orders = cmd.ExecuteReader())
+            {
+                if (orders.Read())
+                {
+                    Console.WriteLine("{0} {1} {2}", orders["orderid"], orders["customer"], 
+                        orders["orderdate"]);
+                }
+                else
+                {
+                    Console.WriteLine("ordine non trovato");
+                    Console.WriteLine("-----------------------------------------");
+                }
+            }
+
             string r = "select orderid, item, qty, price" +
-                "from orderitems" + 
+                "from orderitems" +
                 "where orderid = @ord";
             var cmd1 = new SqlCommand(r, con);
             cmd1.Parameters.Add(new SqlParameter("id", ord));
 
-            using (var orders = cmd.ExecuteReader())
+            using (var orders = cmd1.ExecuteReader())
             {
-                while (orders.Read())
+                if (orders.Read())
                 {
-                    Console.WriteLine("{0} {1} {2} {3} {4} {5}", orders["orderid"], orders["customer"], 
-                        orders["orderdate"], orders["item"], orders["qty"], orders["price"]);
+                    Console.WriteLine("{0} {1} {2} {3}", orders["orderid"],
+                        orders["item"], orders["qty"], orders["price"]);
+                }
+                else
+                {
+                    Console.WriteLine("ordine non trovato");
+                    Console.WriteLine("-----------------------------------------");
                 }
             }
         }
