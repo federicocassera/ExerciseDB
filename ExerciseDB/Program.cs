@@ -49,7 +49,7 @@ namespace ExerciseDB
                             createUser(con); 
                             break;                            
                         case 2: 
-                            User user = Login(con);
+                            Login(con);
                             break;
                         case 3: 
                             listOrder(con);
@@ -226,7 +226,7 @@ namespace ExerciseDB
             //Console.WriteLine($"ho modificato {cmd.ExecuteNonQuery()} righe");
             
         }
-        public static User Login(SqlConnection con)
+        public static void Login(SqlConnection con)
         {
             Console.WriteLine("Inserire il nome utente");
             string username = Console.ReadLine();
@@ -244,10 +244,9 @@ namespace ExerciseDB
                     Console.WriteLine($"benvenuto {username}");
                     Console.WriteLine("--> {0} {1}", utenti["login"], utenti["password"]);
                     Console.WriteLine("-----------------------------------------");
-                    return new User(username, password);
+                    new User(username, password);
                 }
             }
-            return null;
         }
 
         public static void readUsers(SqlConnection con)
