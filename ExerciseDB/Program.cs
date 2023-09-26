@@ -308,11 +308,19 @@ namespace ExerciseDB
 
         public static void detailOrder(SqlConnection con)
         {
-            string q = "select o.orderid, customer, orderdate, item, qty, price" +
-                "from orders as o" +
-                "inner join orderitems as i" +
-                "on o.orderid = i.orderid";
+            Console.WriteLine("inseire id dell'ordine");
+            int ord = (int)Console.Read();
+            string q = $"select orderid, customer, orderdate, item, qty, price" +
+                "from orders" +
+                "where orderid = @ord";
             var cmd = new SqlCommand(q, con);
+            cmd.Parameters.Add(new SqlParameter("id", ord));
+            string r = "select orderid, item, qty, price" +
+                "from orderitems" + 
+                "where orderid = @ord";
+            var cmd1 = new SqlCommand(r, con);
+            cmd1.Parameters.Add(new SqlParameter("id", ord));
+
             using (var orders = cmd.ExecuteReader())
             {
                 while (orders.Read())
